@@ -3,12 +3,16 @@ package Test::DNS;
 use Moose;
 use Net::DNS;
 use Test::Deep 'cmp_bag';
+use Set::Object 'set';
 use base 'Test::Builder::Module';
 
 has 'nameservers' => ( is => 'rw', isa => 'ArrayRef', default    => sub { [] } );
 has 'object'      => ( is => 'ro', isa => 'Net::DNS::Resolver', lazy_build => 1 );
 
-our $VERSION = '0.01';
+has 'follow_cname' => ( is => 'rw', isa => 'Bool', default => 0 );
+has 'warnings'     => ( is => 'rw', isa => 'Bool', default => 1 );
+
+our $VERSION = '0.02';
 
 my $CLASS = __PACKAGE__;
 
@@ -46,16 +50,55 @@ sub is_ns {
     return;
 }
 
-sub get_method {
+# Domain -> MX
+sub is_mx {
+    my ( $self, $domain, $mx, $test_name ) = @_;
+    $self->is_record( 'MX', $domain, $mx );
+    return;
+}
+
+# Domain -> CNAME
+sub is_cname {
+    my ( $self, $domain, $cname, $test_name ) = @_;
+    $self->is_record( 'CNAME', $domain, $cname );
+    return;
+}
+
+sub _get_method {
     my ( $self, $type ) = @_;
     my %method_by_type = (
-        'A'   => 'address',
-        'NS'  => 'nsdname',
-        'PTR' => 'ptrdname',
+        'A'     => 'address',
+        'NS'    => 'nsdname',
+        'MX'    => 'exchange',
+        'PTR'   => 'ptrdname',
+        'CNAME' => 'cname',
     );
 
     my $method = $method_by_type{$type};
     return $method ? $method : 0;
+}
+
+sub _recurse_a_records {
+    my ( $self, $set, $rr ) = @_;
+    my $res = $self->object;
+
+    if ( $rr->type eq 'CNAME' ) {
+        my $cname_method = $self->_get_method('CNAME');
+        my $cname        = $rr->$cname_method;
+        my $query        = $res->query( $cname, 'A' );
+
+        if ($query) {
+            my @records = $query->answer;
+            foreach my $record (@records) {
+                $self->_recurse_a_records( $set, $record );
+            }
+        }
+    } elsif ( $rr->type eq 'A' ) {
+        my $a_method = $self->_get_method('A');
+        $set->insert( $rr->$a_method );
+    }
+
+    return;
 }
 
 sub is_record {
@@ -63,10 +106,10 @@ sub is_record {
 
     my $res        = $self->object;
     my $tb         = $CLASS->builder;
-    my $method     = $self->get_method($type);
+    my $method     = $self->_get_method($type);
     my $query_res  = $res->query( $input, $type );
     my $COMMASPACE = q{, };
-    my @results    = ();
+    my $results    = set();
 
     ( ref $expected eq 'ARRAY' ) || ( $expected = [ $expected ] );
     $test_name ||= "[$type] $input -> " . join $COMMASPACE, @{$expected};
@@ -81,19 +124,26 @@ sub is_record {
 
     foreach my $rr (@records) {
         if ( $rr->type ne $type ) {
-            $self->_warn( $type, 'got incorrect RR type: ' . $rr->type );
+            if ( $rr->type eq 'CNAME' && $self->follow_cname ) {
+                $self->_recurse_a_records( $results, $rr );
+            } else {
+                $self->_warn( $type, 'got incorrect RR type: ' . $rr->type );
+            }
+        } else {
+            $results->insert( $rr->$method );
         }
-
-        push @results, $rr->$method;
     }
 
-    cmp_bag( \@results, $expected, $test_name );
+    cmp_bag( [ $results->members ], $expected, $test_name );
 
     return;
 }
 
 sub _warn {
     my ( $self, $type, $msg ) = @_;
+
+    $self->warnings || return;
+
     chomp $msg;
     my $tb = $CLASS->builder;
     $tb->diag("!! Warning: [$type] $msg !!");
@@ -111,7 +161,7 @@ Test::DNS - Test DNS queries and zone configuration
 
 =head1 VERSION
 
-Version 0.01
+Version 0.02
 
 =head1 SYNOPSIS
 
@@ -132,6 +182,34 @@ This module helps you write tests for DNS queries. You could test your domain co
 =head1 EXPORT
 
 This module is completely Object Oriented, nothing is exported.
+
+=head1 ATTRIBUTES
+
+=head2 nameservers
+
+Same as in L<Net::DNS>. Sets the nameservers, accepts an arrayref.
+
+    $dns->nameservers( [ 'IP1', 'DOMAIN' ] );
+
+=head2 warnings
+
+Do you want to output warnings from the module, such as when a record doesn't a query result or incorrect types?
+
+This helps avoid common misconfigurations. You should probably keep it, but if it bugs you, you can stop it using:
+
+    $dns->warnings(0);
+
+Default: 1 (on).
+
+=head2 follow_cname
+
+When fetching an A record of a domain, it may resolve to a CNAME instead of an A record. That would result in a false-negative of sorts, in which you say "well, yes, I meant the A record the CNAME record points to" but L<Test::DNS> doesn't know that.
+
+If you want want Test::DNS to follow every CNAME till it reaches the actual A record and compare B<that> A record, use this option.
+
+    $dns->follow_cname(1);
+
+Default: 0 (off).
 
 =head1 SUBROUTINES/METHODS
 
@@ -159,6 +237,28 @@ Check the PTR records of an IP.
 
     $dns->is_ptr( 'IP', [ 'first.ptr.domain', 'second.ptr.domain' ] );
 
+=head2 is_mx
+
+Check the MX records of a domain.
+
+    $dns->is_mx( 'domain' => 'mailer.domain' );
+
+    $dns->is_ptr( 'domain', [ 'mailer1.domain', 'mailer2.domain' ] );
+
+=head2 is_cname
+
+Check the CNAME records of a domain.
+
+    $dns->is_cname( 'domain' => 'sub.domain' );
+
+    $dns->is_cname( 'domain', [ 'sub1.domain', 'sub2.domain' ] );
+
+=head2 is_record
+
+The general function all the other is_* functions run.
+
+    $dns->is_record( 'CNAME', 'domain', 'sub.domain', 'test_name' );
+
 =head1 DEPENDENCIES
 
 L<Moose>
@@ -166,6 +266,8 @@ L<Moose>
 L<Net::DNS>
 
 L<Test::Deep>
+
+L<Set::Object>
 
 =head1 AUTHOR
 

@@ -1,5 +1,14 @@
 Revision history for Test-DNS
 
-0.01    Date/time
-        First version, released on an unsuspecting world.
+0.02    12.01.10
+        - adding is_mx method
+        - adding is_cname method
+        - adding warnings attribute
+        - adding follow_cname attribute
+        - started using Set::Object, added dependency
+        - adding more docs
+        - making get_method private (_get_method)
+
+0.01    11.01.10
+        First version!
 
