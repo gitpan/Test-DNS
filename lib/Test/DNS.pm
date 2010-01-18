@@ -6,13 +6,22 @@ use Test::Deep 'cmp_bag';
 use Set::Object 'set';
 use base 'Test::Builder::Module';
 
-has 'nameservers' => ( is => 'rw', isa => 'ArrayRef', default    => sub { [] } );
-has 'object'      => ( is => 'ro', isa => 'Net::DNS::Resolver', lazy_build => 1 );
+has 'nameservers' => (
+    is      => 'rw',
+    isa     => 'ArrayRef',
+    default => sub { [] },
+    trigger => sub {
+        my ( $self, $nameservers ) = @_;
+        $self->object->nameservers( @{$nameservers} );
+    },
+);
+
+has 'object' => ( is => 'ro', isa => 'Net::DNS::Resolver', lazy_build => 1 );
 
 has 'follow_cname' => ( is => 'rw', isa => 'Bool', default => 0 );
 has 'warnings'     => ( is => 'rw', isa => 'Bool', default => 1 );
 
-our $VERSION = '0.04';
+our $VERSION = '0.05';
 
 my $CLASS = __PACKAGE__;
 
@@ -192,7 +201,7 @@ Test::DNS - Test DNS queries and zone configuration
 
 =head1 VERSION
 
-Version 0.04
+Version 0.05
 
 =head1 SYNOPSIS
 
