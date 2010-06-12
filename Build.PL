@@ -1,32 +1,44 @@
+
 use strict;
 use warnings;
-use Module::Build;
 
-my $builder = Module::Build->new(
-    module_name         => 'Test::DNS',
-    license             => 'perl',
-    dist_author         => q{Sawyer X <xsawyerx@cpan.org>},
-    dist_version_from   => 'lib/Test/DNS.pm',
-    build_requires      => {
-        'Test::More' => 0,
-    },
-    requires            => {
-        'Moose'         => 0.80,
-        'Net::DNS'      => 0.65,
-        'Test::Deep'    => 0,
-        'Test::Builder' => 0,
-        'Set::Object'   => 0,
-    },
-    meta_merge          => {
-        resources => {
-            repository => 'http://github.com/xsawyerx/test-dns',
-        },
-        keywords   => [ 'DNS' ],
-    },
-    add_to_cleanup      => [ 'Test-DNS-*' ],
-    create_makefile_pl  => 'traditional',
-    create_license      => 1,
-    create_readme       => 1,
+use Module::Build 0.3601;
+
+
+my %module_build_args = (
+  'build_requires' => {
+    'English' => '0',
+    'File::Find' => '0',
+    'File::Temp' => '0',
+    'Module::Build' => '0.3601',
+    'Test::Deep::NoTest' => '0',
+    'Test::More' => '0'
+  },
+  'configure_requires' => {
+    'ExtUtils::MakeMaker' => '6.31',
+    'Module::Build' => '0.3601'
+  },
+  'dist_abstract' => 'Test DNS queries and zone configuration',
+  'dist_author' => [
+    'Sawyer X <xsawyerx@cpan.org>'
+  ],
+  'dist_name' => 'Test-DNS',
+  'dist_version' => '0.08',
+  'license' => 'perl',
+  'module_name' => 'Test::DNS',
+  'recommends' => {},
+  'recursive_test_files' => 1,
+  'requires' => {
+    'Moose' => '0',
+    'Net::DNS' => '0',
+    'Set::Object' => '0',
+    'Test::Builder::Module' => '0',
+    'Test::Deep' => '0'
+  },
+  'script_files' => []
 );
 
-$builder->create_build_script();
+
+my $build = Module::Build->new(%module_build_args);
+
+$build->create_build_script;

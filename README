@@ -2,7 +2,7 @@ NAME
     Test::DNS - Test DNS queries and zone configuration
 
 VERSION
-    Version 0.07
+    version 0.08
 
 SYNOPSIS
     This module helps you write tests for DNS queries. You could test your
@@ -165,6 +165,17 @@ SUBROUTINES/METHODS
 
         $dns->is_cname( 'domain', [ 'sub1.domain', 'sub2.domain' ] );
 
+  is_txt( $domain, $txt, [$test_name] )
+    Check the TXT records of a domain.
+
+    $txt can be an arrayref.
+
+    $test_name is not mandatory.
+
+        $dns->is_txt( 'domain' => 'v=spf1 -all' );
+
+        $dns->is_txt( 'domain', [ 'sub1.domain', 'sub2.domain' ] );
+
   is_record( $type, $input, $expected, [$test_name] )
     The general function all the other is_* functions run.
 
@@ -177,6 +188,9 @@ SUBROUTINES/METHODS
     $test_name is not mandatory.
 
         $dns->is_record( 'CNAME', 'domain', 'sub.domain', 'test_name' );
+
+  BUILD
+    Moose builder method. Do not call it or override it. :)
 
 HASH FORMAT
     The hash format option (since version 0.04) allows you to run the tests
@@ -248,4 +262,13 @@ LICENSE AND COPYRIGHT
     by the Free Software Foundation; or the Artistic License.
 
     See http://dev.perl.org/licenses/ for more information.
+
+AUTHOR
+      Sawyer X <xsawyerx@cpan.org>
+
+COPYRIGHT AND LICENSE
+    This software is copyright (c) 2010 by Sawyer X.
+
+    This is free software; you can redistribute it and/or modify it under
+    the same terms as the Perl 5 programming language system itself.
 

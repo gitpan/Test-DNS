@@ -1,26 +1,28 @@
---- #YAML:1.0
-name:               Test-DNS
-version:            0.07
-abstract:           ~
-author:  []
-license:            unknown
-distribution_type:  module
-configure_requires:
-    ExtUtils::MakeMaker:  0
+---
+abstract: 'Test DNS queries and zone configuration'
+author:
+  - 'Sawyer X <xsawyerx@cpan.org>'
 build_requires:
-    ExtUtils::MakeMaker:  0
-requires:
-    Moose:          0.8
-    Net::DNS:       0.65
-    Set::Object:    0
-    Test::Builder:  0
-    Test::Deep:     0
-    Test::More:     0
-no_index:
-    directory:
-        - t
-        - inc
-generated_by:       ExtUtils::MakeMaker version 6.56
+  English: 0
+  File::Find: 0
+  File::Temp: 0
+  Module::Build: 0.3601
+  Test::Deep::NoTest: 0
+  Test::More: 0
+configure_requires:
+  ExtUtils::MakeMaker: 6.31
+  Module::Build: 0.3601
+dynamic_config: 0
+generated_by: 'Dist::Zilla version 4.101612, CPAN::Meta::Converter version 2.101610'
+license: perl
 meta-spec:
-    url:      http://module-build.sourceforge.net/META-spec-v1.4.html
-    version:  1.4
+  url: http://module-build.sourceforge.net/META-spec-v1.4.html
+  version: 1.4
+name: Test-DNS
+requires:
+  Moose: 0
+  Net::DNS: 0
+  Set::Object: 0
+  Test::Builder::Module: 0
+  Test::Deep: 0
+version: 0.08
