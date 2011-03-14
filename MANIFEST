@@ -5,7 +5,6 @@ MANIFEST
 META.yml
 Makefile.PL
 README
-TODO
 dist.ini
 lib/Test/DNS.pm
 t/00-compile.t
@@ -14,7 +13,5 @@ t/author-critic.t
 t/follow_cname.t
 t/is_records.t
 t/manifest.t
-t/pod-coverage.t
-t/pod.t
 t/release-pod-coverage.t
 t/release-pod-syntax.t

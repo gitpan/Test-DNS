@@ -13,13 +13,19 @@ $dns->is_ptr( '74.125.148.13' => 's9b1.psmtp.com' );
 $dns->is_ptr( '74.125.148.13' => [ 's9b1.psmtp.com' ] );
 
 # the NS record of a domain
-$dns->is_ns( 'perl.com' => [ map { "nsauth$_.oreilly.com" } 'a', 'b' ] );
+$dns->is_ns(
+    'perl.com' => [
+        ( map { "ns$_.eu.bitnames.com" } 1 .. 2 ),
+        ( map { "ns$_.us.bitnames.com" } 1 .. 3 ),
+    ],
+);
 
 # the A record of NS records of a domain
 $dns->is_a( 'ns1.google.com' => '216.239.32.10' );
 
 # the MX records of a domain
 $dns->is_mx( 'google.com' => [
+    'aspmx.l.google.com',
     map { "google.com.s9$_.psmtp.com" } qw/ b1 b2 a1 a2 /,
 ] );
 
@@ -35,7 +41,10 @@ $dns->is_a( {
 
 # NS in hash
 $dns->is_ns( {
-    'perl.com'      => [ map { "nsauth$_.oreilly.com" } 'a', 'b' ],
+    'perl.com' => [
+        ( map { "ns$_.eu.bitnames.com" } 1 .. 2 ),
+        ( map { "ns$_.us.bitnames.com" } 1 .. 3 ),
+    ],
     'microsoft.com' => [ map { "ns$_.msft.net"        } 1 .. 5   ],
 } );
 
@@ -48,6 +57,7 @@ $dns->is_ptr( {
 # MX in hash
 $dns->is_mx( {
         'google.com' => [
+            'aspmx.l.google.com',
             map { "google.com.s9$_.psmtp.com" } qw/ b1 b2 a1 a2 /,
         ],
         'microsoft.com' => 'mail.messaging.microsoft.com',

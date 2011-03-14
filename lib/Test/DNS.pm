@@ -1,4 +1,7 @@
 package Test::DNS;
+BEGIN {
+  $Test::DNS::VERSION = '0.09';
+}
 # ABSTRACT: Test DNS queries and zone configuration
 
 use Moose;
@@ -21,8 +24,6 @@ has 'object' => ( is => 'ro', isa => 'Net::DNS::Resolver', lazy_build => 1 );
 
 has 'follow_cname' => ( is => 'rw', isa => 'Bool', default => 0 );
 has 'warnings'     => ( is => 'rw', isa => 'Bool', default => 1 );
-
-our $VERSION = '0.08';
 
 my $CLASS = __PACKAGE__;
 
@@ -213,7 +214,7 @@ Test::DNS - Test DNS queries and zone configuration
 
 =head1 VERSION
 
-version 0.08
+version 0.09
 
 =head1 SYNOPSIS
 
@@ -504,7 +505,7 @@ See http://dev.perl.org/licenses/ for more information.
 
 =head1 COPYRIGHT AND LICENSE
 
-This software is copyright (c) 2010 by Sawyer X.
+This software is copyright (c) 2011 by Sawyer X.
 
 This is free software; you can redistribute it and/or modify it under
 the same terms as the Perl 5 programming language system itself.
