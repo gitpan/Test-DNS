@@ -23,7 +23,7 @@ my %module_build_args = (
     'Sawyer X <xsawyerx@cpan.org>'
   ],
   'dist_name' => 'Test-DNS',
-  'dist_version' => '0.09',
+  'dist_version' => '0.10',
   'license' => 'perl',
   'module_name' => 'Test::DNS',
   'recommends' => {},

@@ -8,10 +8,13 @@ README
 dist.ini
 lib/Test/DNS.pm
 t/00-compile.t
-t/00-load.t
 t/author-critic.t
 t/follow_cname.t
-t/is_records.t
-t/manifest.t
+t/records/a.t
+t/records/cname.t
+t/records/mx.t
+t/records/ns.t
+t/records/ptr.t
+t/records/txt.t
 t/release-pod-coverage.t
 t/release-pod-syntax.t

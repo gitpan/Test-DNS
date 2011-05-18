@@ -34,9 +34,9 @@ my %WriteMakefileArgs = (
     'Test::Builder::Module' => '0',
     'Test::Deep' => '0'
   },
-  'VERSION' => '0.09',
+  'VERSION' => '0.10',
   'test' => {
-    'TESTS' => 't/*.t'
+    'TESTS' => 't/*.t t/records/*.t'
   }
 );
 
