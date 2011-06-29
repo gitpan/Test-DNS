@@ -1,6 +1,6 @@
 package Test::DNS;
 BEGIN {
-  $Test::DNS::VERSION = '0.10';
+  $Test::DNS::VERSION = '0.11';
 }
 # ABSTRACT: Test DNS queries and zone configuration
 
@@ -214,7 +214,7 @@ Test::DNS - Test DNS queries and zone configuration
 
 =head1 VERSION
 
-version 0.10
+version 0.11
 
 =head1 SYNOPSIS
 

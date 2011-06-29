@@ -16,7 +16,6 @@ my %WriteMakefileArgs = (
     'File::Find' => '0',
     'File::Temp' => '0',
     'Module::Build' => '0.3601',
-    'Test::Deep::NoTest' => '0',
     'Test::More' => '0'
   },
   'CONFIGURE_REQUIRES' => {
@@ -34,7 +33,7 @@ my %WriteMakefileArgs = (
     'Test::Builder::Module' => '0',
     'Test::Deep' => '0'
   },
-  'VERSION' => '0.10',
+  'VERSION' => '0.11',
   'test' => {
     'TESTS' => 't/*.t t/records/*.t'
   }
