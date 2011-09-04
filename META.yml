@@ -24,4 +24,4 @@ requires:
   Set::Object: 0
   Test::Builder::Module: 0
   Test::Deep: 0
-version: 0.12
+version: 0.13
